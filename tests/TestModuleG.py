@@ -1,22 +1,14 @@
 import unittest
 from modules.ModuleG import ModuleG
-from unittest.mock import patch
 from data.Entry import Entry
 
-
-### change code
-#  has no stubs, i.e no objects to mock
-# the "driver" is basically the unit test
-
-# no need to test FileNotFOundError in Module G OR B
-# filename is a string,... data.txt used in Mainprogram.py
-# data is an entry obj with name and number
+# no need to test FileNotFOundError in Module G as this would require student to intentionally change
+# a files permission to be not readable by current user
 
 
 class TestF(unittest.TestCase):
     
     def test_updateData_method(self):
-        print("mock update data test")
     	
         test_filename = "test_write.txt"
         test_name = "name"
@@ -28,7 +20,7 @@ class TestF(unittest.TestCase):
         # call updateData method
         ModuleG.updateData(self,test_filename, data_list)
 
-        # assertion calls to check data is written to .txt file
+        # open file and use assertion calls to check data is written to .txt file correctly
         count = 0
         with open(test_filename) as fp:
             Lines = fp.readlines()
