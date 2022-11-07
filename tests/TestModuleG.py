@@ -6,10 +6,11 @@ from data.Entry import Entry
 # a files permission to be not readable by current user
 
 
-class TestF(unittest.TestCase):
+class TestG(unittest.TestCase):
     
     def test_updateData_method(self):
     	
+    	# declare test data
         test_filename = "test_write.txt"
         test_name = "name"
         test_name1 = "name1"
