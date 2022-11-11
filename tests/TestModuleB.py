@@ -30,11 +30,9 @@ class TestB(unittest.TestCase):
         
         with open(test_file, 'w') as f:
             f.write(test_data1)
-            f.write(test_data2)
+            f.write(test_data2)  	
     
-        # this method call returns data [], should be an arr of two entry objects
-        test_ModuleB.loadFile(test_file)    	
-    
+        # assert that Entry obj's returned from method call have stored data 
         self.assertEqual(test_ModuleB.loadFile(test_file)[0].name, test_name1)
         self.assertEqual(test_ModuleB.loadFile(test_file)[0].number, test_number1)
         self.assertEqual(test_ModuleB.loadFile(test_file)[1].name, test_name2)
