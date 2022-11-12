@@ -1,6 +1,7 @@
 import unittest
 from modules.ModuleA import ModuleA
 from unittest.mock import Mock
+from unittest.mock import patch
 
 class TestA(unittest.TestCase):
 
@@ -29,12 +30,15 @@ class TestA(unittest.TestCase):
         self.mock_ModuleD.deleteData.return_value = None
         self.assertFalse(self.test_ModuleA.parseDelete(index_to_del))
         
+    
+    @patch.object(ModuleA, "displayHelp")
+    def test_displayHelp_method(self, mock_displayHelp):
         
-    def test_displayHelp_method(self):
+        # call to mock method
+        mock_displayHelp()
         
-        # mock the method??
-        
-        # assertion
+        # assertion statements
+        mock_displayHelp.assert_called()
         self.assertTrue(self.test_ModuleA.displayHelp())
         
         
@@ -63,9 +67,13 @@ class TestA(unittest.TestCase):
         test_name = "Bobby"
         test_number = "42349"
         
-        # assertion statement, method returns true because d is a mocked obj, so the method call just returns a 
-        # mock obj, meaning self._data != None
+        # mock return value of loadFile method to return empty list
+        self.mock_ModuleD.insertData.return_value = []
         self.assertTrue(self.test_ModuleA.parseAdd(test_name, test_number))
+        
+        # mock return value of loadFile method to return None
+        self.mock_ModuleD.insertData.return_value = None
+        self.assertFalse(self.test_ModuleA.parseAdd(test_name, test_number))
         
         
 
