@@ -73,6 +73,23 @@ class TestSystemIntegration(unittest.TestCase):
                 if (len(values) == 2):
                     self.assertEqual(self.A.data[count-1].name, values[0])
                     self.assertEqual(self.A.data[count-1].number, values[1])
+                    
+
+    def test_system_delete_command(self):
+        self.A.run( "delete",5)
+        
+        # assert database is updated
+        count = 0
+        with open(self.filename) as fp:
+            Lines = fp.readlines()
+            for line in Lines:
+                count += 1
+                values=line.strip().split(",")
+                if (len(values) == 2):
+                    self.assertEqual(self.A.data[count-1].name, values[0])
+                    self.assertEqual(self.A.data[count-1].number, values[1])
+                    
+    
         
 
 if __name__ == '__main__':
