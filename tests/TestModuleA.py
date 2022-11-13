@@ -19,8 +19,8 @@ class TestA(unittest.TestCase):
 
     def test_parseDelete_method(self):
         self.test_data = []
-        self.test_ModuleA.filename = self.test_filename
-        self.test_ModuleA.data = self.test_data
+        self.test_ModuleA._filename = self.test_filename
+        self.test_ModuleA._data = self.test_data
         index_to_del = 2
         
         # mock return value of deleteData method to return empty list
@@ -91,6 +91,8 @@ class TestA(unittest.TestCase):
         test_num = "87635"
         test_num1 = "96453"
         self.test_data = [Entry(test_name,test_num), Entry(test_name1,test_num1)]
+        self.test_ModuleA._filename = self.test_filename
+        self.test_ModuleA._data = self.test_data
         
         test_new_name = "Not Hanny"
         test_new_number = "123693"
@@ -99,12 +101,12 @@ class TestA(unittest.TestCase):
         # mock return value of updateData method to return updated list with new person/ num at index 1
         self.mock_ModuleD.updateData.return_value = [Entry(test_name,test_num), Entry(test_new_name,test_new_number)]
         self.assertTrue(self.test_ModuleA.parseUpdate(index_to_update, test_new_name, test_new_number))
-        self.mock_ModuleD.updateData.assert_called_with(index_to_update, test_new_name, test_new_number, self.test_filename)
+        self.mock_ModuleD.updateData.assert_called_with(self.test_data, index_to_update, test_new_name, test_new_number, self.test_filename)
         
         # mock return value of updateData method to return None
         self.mock_ModuleD.updateData.return_value = None
         self.assertFalse(self.test_ModuleA.parseUpdate(index_to_update, test_new_name, test_new_number))
-        self.mock_ModuleD.updateData.assert_called_with(index_to_update, test_new_name, test_new_number, self.test_filename)
+        self.mock_ModuleD.updateData.assert_called_with(self.test_data, index_to_update, test_new_name, test_new_number, self.test_filename)
       
       
     def test_runExit_method(self):
@@ -115,7 +117,7 @@ class TestA(unittest.TestCase):
     
     
     @patch.object(ModuleA, "run")
-    def test_run_NO_and_help_command_given_method(self, mock_run):
+    def test_run_NO_and_help_command_method(self, mock_run):
         # call to mock method w/ no command
         mock_run()
         
@@ -128,7 +130,7 @@ class TestA(unittest.TestCase):
         mock_run.assert_called_with("help")      
                 
                 
-    def test_run_add_command_given_method(self):
+    def test_run_add_command_method(self):
         self.test_ModuleA._data = [Entry("hello","54")]
         self.test_ModuleA.run("add")
         self.mock_ModuleD.insertData.assert_not_called() # IndexError so no method call
@@ -143,7 +145,7 @@ class TestA(unittest.TestCase):
         self.mock_ModuleD.insertData.assert_called_with([], "test_name_to_add", "76585", self.test_filename)          
    
 
-    def test_run_load_command_given_method(self):
+    def test_run_load_command_method(self):
         # test load command
         self.test_ModuleA.run("load")
         self.mock_ModuleB.loadFile.assert_not_called()
@@ -151,6 +153,55 @@ class TestA(unittest.TestCase):
         self.mock_ModuleB.loadFile.assert_called_once_with(self.test_filename)
         
         
+    def test_run_sort_command_method(self):
+        self.test_ModuleA._data = None
+        self.test_ModuleA.run("sort")
+        self.mock_ModuleC.sortData.assert_not_called() # self.data == None so no method call
+        
+        self.test_ModuleA._data = [Entry("hello","54")]
+        self.test_ModuleA.run("sort")
+        self.mock_ModuleC.sortData.assert_called_once() # runSort() is called when data!=None
+        
+
+    def test_run_update_command_method(self):
+        self.test_ModuleA._data = [Entry("hello","58945")]
+        self.test_ModuleA.run("update")
+        self.mock_ModuleD.updateData.assert_not_called() # IndexError so no method call
+        
+        self.test_ModuleA._data = None
+        self.test_ModuleA.run("update")
+        self.mock_ModuleD.updateData.assert_not_called() # self.data == None so no method call
+        
+        self.test_ModuleA._data = []
+        self.test_ModuleA._filename = self.test_filename
+        index_to_update = 0
+        self.test_ModuleA.run("update",index_to_update ,"test_name_to_update", "76585")
+        self.mock_ModuleD.updateData.assert_called_with([], index_to_update, "test_name_to_update", "76585", self.test_filename)  
+
+        
+    def test_run_delete_command_method(self):
+        self.test_ModuleA._data = [Entry("hello","58945")]
+        self.test_ModuleA.run("delete")
+        self.mock_ModuleD.deleteData.assert_not_called() # IndexError so no method call
+        
+        self.test_ModuleA._data = None
+        self.test_ModuleA.run("delete")
+        self.mock_ModuleD.deleteData.assert_not_called() # self.data == None so no method call
+        
+        self.test_ModuleA._data = []
+        self.test_ModuleA._filename = self.test_filename
+        index_to_delete = 0
+        self.test_ModuleA.run("delete", index_to_delete)
+        self.mock_ModuleD.deleteData.assert_called_with([], index_to_delete, self.test_filename)  
+        
+    def test_run_exit_command_method(self):
+        try:
+            self.test_ModuleA.run("exit")
+        except:
+            self.mock_ModuleE.exitProgram.assert_called_once()
+        
+    
+    
 if __name__ == '__main__':
     unittest.main()
     
